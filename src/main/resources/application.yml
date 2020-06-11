@@ -1,0 +1,16 @@
+spring:
+  profiles:
+    active: dev #dev开发模式  prod生产模式
+---
+spring:
+  profiles: dev    
+  
+  thymeleaf:
+    cache: false #关闭模板缓存
+folder_file_path: "\\\\192.168.41.251\\Public\\newgzgd\\epfile\\clientfile\\foldimg\\"      #图片和json文件保存的文件夹
+jobnote_file_path: "\\\\192.168.41.161\\xml\\newgzgd\\epfile\\sample\\e-print\\"      #工单文件的文件夹
+interface_jobnote_info: "http://192.168.41.161:8188/newgzgd/getJobnotes.action?type=test&jobno="  #请求工单信息的接口      
+---
+spring:
+  profiles: prod    
+    

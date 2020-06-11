@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>預覽</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<!---->
+
+<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="dist/popper.min.js"
+	crossorigin="anonymous"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.bundle.js"></script>
+<script src="js/jQueryRotate.js"></script>
+<script type="text/javascript" src="js/hammer.js"></script>
+<script src="js/boxImg.js" type="text/javascript"></script>
+</head>
+<body>
+	<div class="htmleaf-container wrap">
+		<header class="navbar navbar-static-top bgcolor-0">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<span class="icon-search"><img
+						src="iconimg/icon_enlarge.png"></span> <span class="headermess">工單號：<a>5634001</a></span>
+					<span class="headerpage">共2款 / 第1款</span>
+				</div>
+
+				<div class="center-block btn-group-mask row" role="group"
+					aria-label="...">
+					<button type="button" class="btn button-eye" onclick="review()">
+						<span class="icon-eye"></span>預覽
+					</button>
+					<button type="button" class="btn btn-default-styles mr-5">
+						<i class="icon-mask-previous"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles"
+						onclick="reverse()">
+						<i class="icon-mask-save"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles"
+						onclick="reverseline()">
+						<i class="icon-mask-change"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles mask-clockwise"
+						onclick="Rotate(-90)">
+						<i class="icon-mask-clockwise2"></i>
+					</button>
+					<button type="button"
+						class="btn btn-default-styles mask-counterclockwise"
+						onclick="Rotate(90)">
+						<i class="icon-mask-counterclockwise2"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles ml-5">
+						<i class="icon-mask-next"></i>
+					</button>
+					<button type="button" class="btn button-disk ml-5"
+						onclick="saveFold()">
+						<span class="icon-floppy-disk"></span>保存
+					</button>
+				</div>
+			</div>
+		</header>
+		<div class="container-fluid" id="container" style="overflow-y: auto;">
+			<div class="row">
+				<div class="leafbar col-md-4 col-lg-3 col-xl-2">
+					<div class="text-center p-3">
+						<h3 class="wordcolor mb-3">風琴摺2條骨</h3>
+						<img class="img-responsive" src="images/6pp_fold.jpg">
+					</div>
+					<div class="chooseimg mt-3 p-3">
+						<ul>
+							<li class="mt-4"><i class="trangel"></i><span>正面</span>
+								<div class="upimg">
+									<a class="padding5pp"><img id="fimg"
+										src="fold/test2_1f.jpg"></a>
+								</div></li>
+							<li class="mt-4"><i class="trangel"></i><span>背面</span>
+								<div class="upimg">
+									<a class="padding5pp"><img id="bimg"
+										src="fold/test2_1b.jpg"></a>
+								</div></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-8 col-lg-9 col-xl-10" id="content">
+					<div class="mt-7 mb-5 text-center">
+						<div class="maxbox" style="position: relative;">
+							<div id="movebox">
+								<div id="moveimg" class="thumbnail" style="position: relative;">
+									<div class="imgrange">
+										<b class="fleft">0mm</b><b class="fright imgrangex-max"></b>
+									</div>
+									<div class="imgrange-v">
+										<b class="fleft">0mm</b><b class="fright imgrangey-max"></b>
+									</div>
+									<img id="img1" class="img1" src="images/5645116-1f.jpg"
+										draggable="false" />
+								</div>
+								<div class="imgline">
+									<!-- <a id="moveupdown" class="lineV" data-toggle="popovery">
+										<i id="i1" class="Tline Tlinehalf"></i><i id="i2" class="Tline Tlinehalf linered"></i>
+									</a> -->
+									<a id="moveleftright" class="lineH line3V1"
+										data-toggle="popoverx"><i class="Tline lineblue"></i></a> 
+									<a id="moveleftright2" class="lineH line3V1"
+										data-toggle="popoverx2"><i class="Tline"></i></a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<form id="reviewForm" action="reviewfengqin2">
+		<input type="hidden" id="xposition" name="folderStyles[0].xposition">
+		<input type="hidden" name="folderStyles[0].reviewAddress" value="reviewfengqin2"> 
+		<input type="hidden" id="fimage" name="folderStyles[0].fimage"> 
+		<input type="hidden" id="bimage" name="folderStyles[0].bimage"> 
+		<input type="hidden" id="line" name="folderStyles[0].line" value="red">
+		<input type="hidden" id="linesequence" name="folderStyles[0].linesequence" value="asc">
+		<input type="hidden" id="angle" name="folderStyles[0].angle">
+		<input type="hidden" name="step" value="review">
+		<input type="hidden" id="imgw" name="folderStyles[0].width"> 
+		<input type="hidden" id="imgh" name="folderStyles[0].height"> 
+	</form>
+	<script type="text/javascript">
+	
+		$(function(){
+			
+			foldingInfoStr = '${foldingInfo}'
+			foldingInfo = eval('(' + foldingInfoStr + ')');
+			
+			var img = new Image();
+			
+			if(foldingInfo.folderStyles != null && foldingInfo.folderStyles[0].fimage != null){
+				$('#fimg').attr('src',foldingInfo.folderStyles[0].fimage);
+				$('#fimage').val(foldingInfo.folderStyles[0].fimage)
+				$('#moveimg img').attr('src',foldingInfo.folderStyles[0].fimage);
+				  
+				img.src = foldingInfo.folderStyles[0].fimage;
+			}else{
+				img.src = "fold/test2_1f.jpg";
+			}
+			
+			if(foldingInfo.folderStyles != null && foldingInfo.folderStyles[0].bimage != null){
+				$('#bimg').attr('src',foldingInfo.folderStyles[0].bimage);
+				$('#bimage').val(foldingInfo.folderStyles[0].bimage)
+			}
+			
+			$('[data-toggle="popoverx"]').popover({
+        		html: true,
+        		trigger : 'focus',
+        		content: "<div class='tooltipnum'><input id='xlength' type='text'/>mm<button onclick=moveline('x') class='btn btn-default'>確認</button></div>",
+        		placement: "top"
+        	});
+			$('[data-toggle="popoverx"]').on('shown.bs.popover', function () {
+				$('#xlength').val(naturalWidth/3)
+			})
+			
+			$('[data-toggle="popoverx2"]').popover({
+        		html: true,
+        		trigger : 'focus',
+        		content: "<div class='tooltipnum'><input id='xlength2' type='text'/>mm<button onclick=moveline('x2') class='btn btn-default'>確認</button></div>",
+        		placement: "top"
+        	});
+			$('[data-toggle="popoverx2"]').on('shown.bs.popover', function () {
+				$('#xlength2').val(2*naturalWidth/3)
+			})
+			
+			img.onload = function(){
+
+		        var h = $(window).height();
+		        var w = $(window).width();
+		        var headerh = $('header.navbar').height();
+		        $("#container").css("height",h-headerh-14);
+		        var ch = $("#container").height();
+		        var cw = $("#content").width();
+		        var leftw = $(".leafbar").width();
+		        $(".leafbar").css("min-height",ch);
+		        $("#moveimg img").css("max-height",ch-300);
+
+		        //旋转
+		        spin_n = 0;
+		        imgwrapw = $(".maxbox").width();
+		        imgwraph = $(".maxbox").height();
+		        imgh = $("#moveimg img").height();
+		        imgw = $("#moveimg img").width();
+		        
+		        if (img.naturalWidth) { // 现代浏览器
+		        	naturalWidth = img.naturalWidth
+		        	naturalHeight = img.naturalHeight
+		        } else { // IE6/7/8
+		        	naturalWidth = img.width
+		            naturalHeight = img.height
+		        }
+		        
+		        maxh = $("#removediv").height();
+		        $(".lineH").css("height",imgwraph+140);
+		        $(".lineV").css("width",imgwrapw+140);
+
+		        if(w<1200){
+		            $(".lineV").css("width",imgwrapw+60);
+		        }
+		        
+		        $('.imgrangex-max').html(naturalWidth+"mm");
+		        $('.imgrangey-max').html(naturalHeight+"mm");
+
+				mdx = parseInt($('#moveimg img').offset().left)
+				mdy = parseInt($('#moveimg img').offset().top)
+				
+				$("#moveleftright").offset({left: mdx + imgw/3 - 5});
+				$("#moveleftright2").offset({left: mdx + 2*imgw/3 - 5});
+		        
+				$('#imgw').val(naturalWidth);
+				$('#imgh').val(naturalHeight);
+				
+				$("[data-toggle='popoverx'],[data-toggle='popoverx2']").popover('toggle');
+			};
+			
+		})
+		var mdx,//moveimg的横、纵坐标
+		 	mdy,
+ 			imgw,//图片宽高
+			imgh,
+			naturalWidth,//实际宽高
+			naturalHeight,
+			styleNum=2,
+			currentStyle=1,
+			angle = 0;
+		var foldingInfoStr,foldingInfo;
+		
+		 var spin_n = 0;
+	     var imgwrapw;
+	     var imgwraph;
+	     var maxh;
+	     var imgx;
+	     
+		var hammerRight = new Hammer(document.getElementById("moveleftright"));
+        //水平
+        hammerRight.on("pan panmove", function (e) {       
+			
+			if(e.type == 'panmove'){  //拖动中
+				if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+					if(e.srcEvent.x > mdx+imgw/10 && e.srcEvent.x < mdx + imgw/2){
+						
+						$('#moveleftright').offset({left:e.srcEvent.x})
+						$('#xlength').val(($('#moveleftright').offset().left - mdx + 5)/imgw * naturalWidth)
+						$('#xlength').parents('[role="tooltip"]').offset({left:e.srcEvent.x - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+				}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+					if(e.srcEvent.x > $('#moveimg img').offset().left + $('#moveimg img').height()/10 
+			 			&& e.srcEvent.x < $('#moveimg img').offset().left + $('#moveimg img').height()/2){
+							
+						$('#moveleftright').offset({left:e.srcEvent.x})
+						$('#xlength').val(($("#moveleftright").offset().left - $("#img1").offset().left +5) * (imgw/$("#img1").width()) / imgh * naturalHeight)
+						$('#xlength').parents('[role="tooltip"]').offset({left:e.srcEvent.x - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+			　　}							
+			}
+		
+        });
+        
+		var hammerRight2 = new Hammer(document.getElementById("moveleftright2"));
+        //水平
+        hammerRight2.on("pan panmove", function (e) {       
+			
+			if(e.type == 'panmove'){  //拖动中
+				
+				if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+					if(e.srcEvent.x > mdx+imgw/2 && e.srcEvent.x < mdx + 9*imgw/10){
+						$('#moveleftright2').offset({left:e.srcEvent.x})
+						$('#xlength2').val(($('#moveleftright2').offset().left - mdx + 5)/imgw * naturalWidth)
+						$('#xlength2').parents('[role="tooltip"]').offset({left:e.srcEvent.x - $('#xlength2').parents('[role="tooltip"]').width()/2})
+					}
+				}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+					if(e.srcEvent.x > $('#moveimg img').offset().left + $('#moveimg img').height()/2
+				 			&& e.srcEvent.x < $('#moveimg img').offset().left + 9*$('#moveimg img').height()/10 ){
+						$('#moveleftright2').offset({left:e.srcEvent.x})
+						$('#xlength2').val(($("#moveleftright2").offset().left - $("#img1").offset().left +5) * (imgw/$("#img1").width()) / imgh * naturalHeight)　　	
+						$('#xlength2').parents('[role="tooltip"]').offset({left:e.srcEvent.x - $('#xlength2').parents('[role="tooltip"]').width()/2})
+					}
+			　　}							
+			}
+        });
+		
+		function reverse(){
+			if(foldingInfo.folderStyles != null){
+				if($('#moveimg img').attr('src') == foldingInfo.folderStyles[0].fimage){
+					$('#moveimg img').attr('src',foldingInfo.folderStyles[0].bimage)
+					$('#line').val('blue');
+				}else{
+					$('#moveimg img').attr('src',foldingInfo.folderStyles[0].fimage)
+					$('#line').val('red');
+				}
+			}else{
+				if(currentStyle == 1){
+					if($('#moveimg img').attr('src') == 'fold/test2_1f.jpg'){
+						$('#moveimg img').attr('src','fold/test2_1b.jpg')
+						$('#line').val('blue');
+					}else{
+						$('#moveimg img').attr('src','fold/test2_1f.jpg')
+						$('#line').val('red');
+					}
+				}else if(currentStyle == 2){
+					if($('#moveimg img').attr('src') == 'fold/test3_1f.jpg'){
+						$('#moveimg img').attr('src','fold/test3_1b.jpg')
+						$('#line').val('blue');
+					}else{
+						$('#moveimg img').attr('src','fold/test3_1f.jpg')
+						$('#line').val('red');
+					}
+				}
+			}
+		}
+		
+		function reverseline(){
+			$('i.lineblue').removeClass('lineblue').parents('a').siblings().find('i').addClass('lineblue')
+			$('#linesequence').val() == 'asc' ? $('#linesequence').val('desc') : $('#linesequence').val('asc')
+		}
+		
+		function moveline(director){
+			if(director == 'x'){
+				if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+					if($('#xlength').val()*1 > naturalWidth/10 && $('#xlength').val()*1 < naturalWidth/2){
+						$('#moveleftright').offset({left: $('#xlength').val()*imgw/naturalWidth + mdx - 5})
+						$('#xlength').parents('[role="tooltip"]').offset({left:$('#moveleftright').offset().left - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+				}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+					if($('#xlength').val()*1 > naturalHeight/10 && $('#xlength').val()*1 < naturalHeight/2){
+						$('#moveleftright').offset({left: $('#xlength').val()*1/(imgw/$("#img1").width())/(naturalHeight/imgh) + $("#img1").offset().left - 5})
+						$('#xlength').parents('[role="tooltip"]').offset({left:$('#moveleftright').offset().left - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+				}
+			}else if(director == 'x2'){
+				if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+					if($('#xlength2').val()*1 > naturalWidth/2 && $('#xlength2').val()*1 < 9*naturalWidth/10){
+						$('#moveleftright2').offset({left: $('#xlength2').val()*imgw/naturalWidth + mdx - 5})
+						$('#xlength2').parents('[role="tooltip"]').offset({left:$('#moveleftright2').offset().left - $('#xlength2').parents('[role="tooltip"]').width()/2})
+					}
+				}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+					if($('#xlength2').val()*1 > naturalHeight/2 && $('#xlength2').val()*1 < 9*naturalHeight/10){
+						$('#moveleftright2').offset({left: $('#xlength2').val()*1/(imgw/$("#img1").width())/(naturalHeight/imgh) + $("#img1").offset().left - 5})
+						$('#xlength2').parents('[role="tooltip"]').offset({left:$('#moveleftright2').offset().left - $('#xlength2').parents('[role="tooltip"]').width()/2})
+					}
+				}
+			}
+		}
+		
+		function saveFold(){
+			$('#xposition').val($('#xlength').val())
+			$('#angle').val(angle);
+			$.ajax({
+				type:'post',
+				data: $('#reviewForm').serialize(),
+                dataType:'json',
+                url:'reviewFold/saveFold',
+                success:function (respData) {
+                	if(respData.errorCode == 10000){
+                		alert("保存成功")
+                	}else{
+                		alert("保存失敗")
+ 					}
+                }
+			})
+		}
+		
+		function review(){
+			$('#xposition').val($('#xlength').val() + "," + $('#xlength2').val())
+			$('#angle').val(angle)
+			$('#reviewForm').submit();
+		}
+		
+		function Rotate(r){
+			angle += r;
+			$('.btn-default-styles').attr('disabled','disabled')
+			
+			$("#moveimg").rotate({
+				animateTo:angle,
+				duration:150,
+				callback: function(){
+					
+					$('.btn-default-styles').removeAttr('disabled')
+					
+					if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+						$("#moveleftright").offset({left: mdx + imgw/3 - 5});
+						$("#moveleftright2").offset({left: mdx + 2*imgw/3 - 5});
+						
+						$('#xlength').val(imgw/3)
+						$('#xlength2').val(2*imgw/3)
+						$('#imgw').val(imgw);
+						$('#imgh').val(imgh);
+					}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+						$("#moveleftright").offset({left:  $('#img1').offset().left + $('#img1').height()/3 - 5});
+						$("#moveleftright2").offset({left: $('#img1').offset().left + 2*$('#img1').height()/3 - 5});
+						
+						$('#xlength').val(imgh/3)
+						$('#xlength2').val(2*imgh/3)
+						$('#imgw').val(imgh);
+						$('#imgh').val(imgw);
+					}
+					$('#xlength').parents('[role="tooltip"]').offset({left:$('#moveleftright').offset().left - $('#xlength').parents('[role="tooltip"]').width()/2})
+					$('#xlength').parents('[role="tooltip"]').offset({top:$("#moveleftright").offset().top - 40})
+					$('#xlength2').parents('[role="tooltip"]').offset({left:$('#moveleftright2').offset().left - $('#xlength2').parents('[role="tooltip"]').width()/2})
+					$('#xlength2').parents('[role="tooltip"]').offset({top:$("#moveleftright2").offset().top - 40})
+					
+				}
+			});
+			
+		}
+	</script>
+</body>
+</html>

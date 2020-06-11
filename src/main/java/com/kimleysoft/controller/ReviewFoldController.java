@@ -1,0 +1,26 @@
+package com.kimleysoft.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kimleysoft.bean.vo.FoldingInfo;
+import com.kimleysoft.service.SaveFoldService;
+
+@RestController
+@RequestMapping("/reviewFold")
+public class ReviewFoldController {
+
+	@Autowired
+	private SaveFoldService saveFoldService;
+	
+	@RequestMapping("/saveFold")
+	public ResponseEntity<Void> saveFold(FoldingInfo foldingInfo) {
+        
+		saveFoldService.saveFold(foldingInfo);
+
+		return ResponseEntity.status(HttpStatus.OK).build();
+	}
+}

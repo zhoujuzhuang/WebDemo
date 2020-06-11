@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>Folding 對摺</title>
+<link href="css/test3d.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css"><!---->
+</head>
+<body>
+	<div class="htmleaf-container">
+		<header class="navbar navbar-static-top bs-docs-nav bgcolor-0">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<span class="icon-search"><img src="iconimg/icon_enlarge.png"></span>
+					<span class="headermess">工單號：<a>5634002</a></span>
+					<span class="headerpage">共2款 / 第1款</span>
+				</div>
+				
+				<div class="center-block btn-group-mask" role="group" aria-label="...">
+					<button type="button" class="btn " onclick="review()"><span class="icon-play3"></span></button>
+					<button type="button" class="btn btn-default-styles"><i class="icon-mask-save"></i></button>
+					<button type="button" class="btn btn-default-styles" onclick="changeSize(-20)"><i class="icon-mask-out"></i></button>
+					<button type="button" class="btn btn-default-styles" onclick="changeSize(20)"><i class="icon-mask-in"></i></button>
+				</div>
+			</div>
+		</header>
+		<div class="container-fluid text-center">
+			<div class="row">
+				<div class="leafbar col-md-4 col-lg-3 col-xl-2 p-3">
+					<div class="alert-warningtext  mt-3"><span class="glyphicon icon-warnning"></span><em>注意事項</em><p>咭片有字體問題、圖片不清晰。</p></div>
+					<div class="chooseimg planb mt-3">
+						<ul>
+							<li class="mt-4">
+								<span>正面</span>
+								<div class="reviewimg">
+									<a><img id="fimg" src="fold/test2_1f.jpg"></a>
+									<p><a href="">pdf查看</a><a href="">jpg查看</a></p>
+								</div>
+							</li>
+							<li class="mt-4">
+								<span>背面</span>
+								<div class="reviewimg">
+									<a><img id="bimg" src="fold/test2_1b.jpg"></a>
+									<p><a href="">pdf查看</a><a href="">jpg查看</a></p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-8 col-lg-9 col-xl-10" id="container">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="bkline">
+			<svg id="ckLine" xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"></svg>
+	</div>
+	
+	<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+	<script src="js/jquery.mousewheel.js" type="text/javascript"></script>
+	<script type="text/javascript" src="dist/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.ckLine.min.js"></script>
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script src="js/stats.min.js"></script>
+    
+    <script>
+
+        var renderer, scene, camera;
+        var container, stats;
+        var startflag = false;
+        var endflag = false;
+        var cards = [], cardboxs = [], cardnums = 4;
+        var card12box;
+        
+		var foldingInfoStr = '${foldingInfo}'
+		var foldingInfo = eval('(' + foldingInfoStr + ')'); 
+
+		var imageWidth,imageHeight;
+		var cameraPositionZ = (foldingInfo.folderStyles[foldingInfo.styleIndex].angle/90) % 4 == 0 || 
+			(foldingInfo.folderStyles[foldingInfo.styleIndex].angle/90) % 4 == 2 || (foldingInfo.folderStyles[foldingInfo.styleIndex].angle/90) % 4 == -2 ? 400 : 500;
+        init();
+        animate();
+
+        function init() {  
+			window.addEventListener('resize', onWindowResize, false);
+
+            //renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true,logarithmicDepthBuffer: true });
+            renderer.setSize(window.innerWidth-50, window.innerHeight);
+            renderer.setClearAlpha(0);
+
+            container = document.getElementById('container');
+            container.appendChild(renderer.domElement);
+
+
+            //stats
+            stats = new Stats();
+            stats.domElement.style.position = 'absolute';
+            stats.domElement.style.top = '0px';
+            //container.appendChild(stats.domElement);
+
+            // scene
+            scene = new THREE.Scene();
+
+            // camera
+            camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.z = cameraPositionZ;
+            controls = new THREE.OrbitControls(camera, container);
+            camera.lookAt(scene.position);
+
+            if(foldingInfo.folderStyles[foldingInfo.styleIndex].fimage == ''){
+				foldingInfo.folderStyles[foldingInfo.styleIndex].fimage = 'fold/test8_1f.jpg'
+			}
+			$('#fimg').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].fimage)
+
+			if(foldingInfo.folderStyles[foldingInfo.styleIndex].bimage == ''){
+				foldingInfo.folderStyles[foldingInfo.styleIndex].bimage = 'fold/test8_1b.jpg'
+			}
+			$('#bimg').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].bimage)
+			imageWidth = 60;
+			imageHeight = 60*(foldingInfo.folderStyles[foldingInfo.styleIndex].height/foldingInfo.folderStyles[foldingInfo.styleIndex].width)*4;
+			
+            var material = new THREE.MeshBasicMaterial({color: 0xffffff });
+            //split card
+            var loader = new THREE.TextureLoader();
+            
+          	for (var i = 0; i < cardnums; i++) {
+
+                // material
+                var cardfront = material.clone();
+                cardfront.map = loader.load('fold/test8_1b.jpg');
+                cardfront.map.offset = new THREE.Vector2(1 / cardnums * (i % cardnums), 0);
+                cardfront.map.repeat = new THREE.Vector2(1 / cardnums, 1);
+
+                // material
+                var cardback = material.clone();
+                cardback.map = loader.load('fold/test8_1f.jpg');
+                cardback.map.offset = new THREE.Vector2(1 / cardnums * ((cardnums - (i + 1))), 0);
+                cardback.map.repeat = new THREE.Vector2(1 / cardnums, 1);
+
+
+                // geometry
+                var geometryfront = new THREE.PlaneGeometry(imageWidth, imageHeight, 1, 1);
+                var geometryback = new THREE.PlaneGeometry(imageWidth, imageHeight, 1, 1);
+                geometryback.applyMatrix(new THREE.Matrix4().makeRotationY(Math.PI));
+
+
+                // mesh
+                var meshfront = new THREE.Mesh(geometryfront, cardfront);
+                var meshback = new THREE.Mesh(geometryback, cardback);
+                meshfront.position.set((i-1) * imageWidth, 0, 0);
+                meshback.position.set((i-1) * imageWidth, 0, 0);
+
+
+                var cardfb = new THREE.Object3D();
+                cardfb.add(meshback);
+                cardfb.add(meshfront);
+                cards.push(cardfb);
+
+                var cardfbbox = changePivot(i * 30, 0, 0, cards[i]);
+                cardboxs.push(cardfbbox);
+                debugger
+            }  
+          	
+            cardboxs[0] = changePivot(-30, 0, 0, cards[0]);
+
+            var card12 = new THREE.Object3D();
+            card12.add(cardboxs[0]);
+            card12.add(cardboxs[1]);
+            card12box = changePivot(30, 0, 0, card12);
+
+            scene.add(cardboxs[2]);
+            scene.add(cardboxs[3]);
+            scene.add(card12box);
+            
+        	setTimeout(function(){
+          		startflag = true;
+			},2000);
+        }
+
+        function review(){
+        	reset();
+        }
+
+        function reset(){
+        	scene.rotation.y = 0;
+        	scene.rotation.x = 0;
+        	
+        	camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.z = cameraPositionZ;
+            controls = new THREE.OrbitControls(camera, container);
+            camera.lookAt(scene.position);
+            
+        	card12box.rotation.y = 0;
+        	cardboxs[0].rotation.y = 0;
+        	cardboxs[3].rotation.y = 0;
+        	endflag = false;
+        }
+        
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            if(startflag){
+	            if (card12box.rotation.y < Math.PI - 0.01 && !endflag) {
+	                card12box.rotation.y += 0.02;
+	            }
+	            else {
+	
+	                if (scene.rotation.x < 0.4 && !endflag) {
+	                    scene.rotation.x += 0.02;
+	                }
+	                else {
+	
+	                    if (cardboxs[0].rotation.y < Math.PI - 0.5) {
+	                        cardboxs[0].rotation.y += 0.05;
+	                    }
+	                    if (cardboxs[3].rotation.y < Math.PI - 0.4) {
+	                        cardboxs[3].rotation.y += 0.05;
+	                        endflag = true;
+	                    }else{
+		                    if (scene.rotation.y < Math.PI && endflag) {
+		     		           scene.rotation.y += 0.02;
+		     		        } 
+	                    }
+	                }
+	            }
+            }
+
+            stats.update();
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function changePivot(x, y, z, obj) {
+            let wrapper = new THREE.Object3D(); wrapper.position.set(x, y, z);
+            wrapper.add(obj);
+            obj.position.set(-x, -y, -z);
+            return wrapper;
+        }
+        function changeSize(size){
+			cameraPositionZ += size;
+			camera.position.z = cameraPositionZ;
+		}
+    </script>
+     <script type="text/javascript"> 
+	    var canvas = $('#container canvas')
+	    canvas.mousewheel(function(event, delta) {
+	        return false;
+	    }) 
+	   canvas.mousedown(function(event, delta){
+	    	if(1 == event.which){
+		    	return true;
+	    	}else if(3 == event.which){
+		    	return false;
+	    	}
+	    })
+	</script>
+</body>
+</html>

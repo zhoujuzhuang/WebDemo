@@ -1,0 +1,10 @@
+body {
+    background: url("../images/bg.jpg") no-repeat center;
+    margin: 0px;
+    overflow: hidden;
+    background-size: cover;
+}
+
+container {
+    background-color: #ffffff;
+}

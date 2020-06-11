@@ -1,0 +1,57 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-family: Arial,Helvetica,"微軟正黑體",sans-serif;
+    font-size: 12pt;
+    color: #333;
+    background-image: url("../images/bg.jpg");
+}
+
+.leftbar {
+    width: 50px;
+    height: 100%;
+    background-color: #1f1f1f;
+    float: left;
+}
+
+.handleicon {
+    display: inline-block;
+    border-bottom: 1px solid #737373;
+    transform: translate(0%,-50%);
+    top: 50%;
+    position: relative;
+}
+
+    .handleicon a {
+        display: inline-block;
+        width: 100%;
+        height: 42px;
+        border-top: 1px solid #737373;
+        text-align: center;
+    }
+
+        .handleicon a img {
+            margin-top: 6px;
+        }
+
+        .handleicon a.active, .handleicon a:hover {
+            background-color: #424242;
+        }
+
+.container {
+    margin-left: 50px;
+    height: 100%;
+    text-align: center;
+}
+
+    .container a {
+        text-align: center;
+        color: #ee6b0d;
+    }

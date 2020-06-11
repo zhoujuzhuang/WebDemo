@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<title>預覽</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<!---->
+
+<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="dist/popper.min.js"
+	crossorigin="anonymous"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.bundle.js"></script>
+<script type="text/javascript" src="js/popover.js"></script>
+<script src="js/jQueryRotate.js"></script>
+<script type="text/javascript" src="js/hammer.js"></script>
+<script src="js/axios.min.js"></script>
+</head>
+<body>
+	<div class="htmleaf-container wrap">
+		<header class="navbar navbar-static-top bgcolor-0">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<span class="icon-search"><img
+						src="../iconimg/icon_enlarge.png"></span> <span class="headermess">工單號：<a th:text="${foldingInfoObj.jobnote}"></a></span>
+					<span class="headerpage">共2款 / 第1款</span>
+				</div>
+
+				<div class="center-block btn-group-mask row" role="group"
+					aria-label="...">
+					<button type="button" class="btn button-eye" onclick="review()">
+						<span class="icon-eye"></span>預覽
+					</button>
+					<button type="button" class="btn btn-default-styles mr-5">
+						<i class="icon-mask-previous"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles"
+						onclick="reverse()">
+						<i class="icon-mask-save"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles">
+						<i class="icon-mask-change"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles mask-clockwise"
+						onclick="Rotate(-90)">
+						<i class="icon-mask-clockwise2"></i>
+					</button>
+					<button type="button"
+						class="btn btn-default-styles mask-counterclockwise"
+						onclick="Rotate(90)">
+						<i class="icon-mask-counterclockwise2"></i>
+					</button>
+					<button type="button" class="btn btn-default-styles ml-5">
+						<i class="icon-mask-next"></i>
+					</button>
+					<button type="button" class="btn button-disk ml-5"
+						onclick="saveFold()">
+						<span class="icon-floppy-disk"></span>保存
+					</button>
+				</div>
+				<!-- <div class="nav navbar-nav navbar-right">
+					<a class="handenlarge"><span class="icon-enlarge"></span></a>
+				</div> -->
+			</div>
+		</header>
+		<div class="container-fluid" id="container" style="overflow-y: auto;">
+			<div class="row">
+				<div class="leafbar col-md-4 col-lg-3 col-xl-2">
+					<div class="dropdown">
+						<button type="button" class="btn dropdown-toggle choosedrop"
+							data-toggle="dropdown">
+							<span class="icon-zhegong"></span>選擇摺工
+						</button>
+						<div class="dropdown-menu dropdown-menu-right">
+							<div class="row mt-4 reviewimgdiv" id="reviewimgdiv">
+								<div class="col-sm-6 col-md-3">
+
+									<a name="duizhe" class="thumbnail"> <img
+										src="images/half_fold.gif" alt="...">
+										<h6>對摺</h6>
+									</a>
+								</div>
+								<div class="col-sm-6 col-md-3">
+
+									<a name="hebaozhe" class="thumbnail"> <img
+										src="images/letter_fold.gif" alt="...">
+										<h6>荷包摺</h6>
+									</a>
+								</div>
+								<div class="col-sm-6 col-md-3">
+									<a name="shizizhe" class="thumbnail"> <img
+										src="images/letter_fold_half_fold.gif" alt="...">
+										<h6>十字摺</h6>
+									</a>
+								</div>
+								<div class="col-sm-6 col-md-3">
+
+									<a name="duimenzhe" class="thumbnail"> <img
+										src="images/gate_fold.gif" alt="...">
+										<h6>對門摺</h6>
+									</a>
+								</div>
+								<div class="col-sm-6 col-md-3">
+
+									<a name="doubleduizhe" class="thumbnail"> <img
+										src="images/double_parallel_fold.gif" alt="...">
+										<h6>對摺再對摺</h6>
+									</a>
+								</div>
+								<div class="col-sm-6 col-md-3">
+
+									<a name="fengqin2" class="thumbnail"> <img
+										src="images/6pp_accordion_fold.gif" alt="...">
+										<h6>風琴摺2條骨</h6>
+									</a>
+								</div>
+
+								<div class="col-sm-6 col-md-3">
+
+									<a href="#" class="thumbnail"> <img
+										src="images/8pp_accordion_fold.gif" alt="...">
+										<h6>風琴摺3條骨</h6>
+									</a>
+								</div>
+								<div class="col-sm-6 col-md-3">
+
+									<a href="#" class="thumbnail"> <img
+										src="images/10pp_accordion_fold.gif" alt="...">
+										<h6>風琴摺4條骨</h6>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="text-center p-3">
+						<h3 class="wordcolor mb-3">對摺</h3>
+						<img class="img-responsive" src="images/half_fold.gif">
+					</div>
+					<div class="chooseimg mt-3 p-3">
+						<ul>
+							<li class="mt-4"><span>正面</span>
+								<div class="reviewimg">
+									<a class="padding5pp"><img id="fimg"
+										src="fold/test1_1f.jpg"></a>
+								</div></li>
+							<li class="mt-4"><span>背面</span>
+								<div class="reviewimg">
+									<a class="padding5pp"><img id="bimg"
+										src="fold/test1_1b.jpg"></a>
+								</div></li>
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-8 col-lg-9 col-xl-10" id="content">
+					<div class="mt-7 mb-5 text-center" id="removediv">
+						<div class="maxbox" style="position: relative;">
+							<div id="moveimg" class="thumbnail" style="position: relative;">
+								<div class="imgrange">
+									<b class="fleft">0mm</b><b class="fright imgrangex-max"></b>
+								</div>
+								<div class="imgrange-v">
+									<b class="fleft">0mm</b><b class="fright imgrangey-max"></b>
+								</div>
+								<img id="img1" class="img1" src="fold/test1_1f.jpg"
+									draggable="false" />
+							</div>
+							<div class="imgline">
+								<!-- <a id="moveupdown" class="lineV" data-toggle="popovery">
+										<i id="i1" class="Tline Tlinehalf"></i><i id="i2" class="Tline Tlinehalf linered"></i>
+									</a> -->
+								<a id="moveleftright" class="lineH" data-toggle="popoverx">
+									<i class="Tline"></i>
+								</a>
+								<!-- <a id="moveleftright2" class="lineH line3V2" data-toggle="popover"><i class="Tline lineblue"></i></a> -->
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<form id="reviewForm" action="review" method="post">
+		<input type="hidden" id="jobnote" name="jobnote" th:value="${foldingInfoObj.jobnote}">
+		<input type="hidden" id="xposition"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].xposition'">
+		<input type="hidden"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].reviewAddress'" value="reviewduizhe"> 
+		<input type="hidden" id="fimage"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].fimage'">
+		<input type="hidden" id="bimage"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].bimage'">
+		<input type="hidden" id="imgw"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].width'">
+		<input type="hidden" id="imgh"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].height'">
+		<input type="hidden" id="line"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].line'" value="red"> 
+		<input type="hidden" id="angle"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].angle'" value="0"> 
+		<input type="hidden"  th:name="addtime" th:value="${foldingInfoObj.addtime}">
+		<input type="hidden" name="step" value="review">
+		<input type="hidden" id="styleIndex" name="styleIndex"
+			th:value="${foldingInfoObj.styleIndex}">
+		<input type="hidden" name="styleNum"
+			th:value="${foldingInfoObj.styleNum}">
+	</form>
+
+	<form id="drawForm" action="draw" method="post" target="_blank">
+		<input type="hidden" id="drawjobnote" name="jobnote" th:value="${foldingInfoObj.jobnote}">
+		<input type="hidden" id="drawfimage"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].fimage'">
+		<input type="hidden" id="drawbimage"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].bimage'">
+		<input type="hidden" id="foldingWorking"
+			th:name="'folderStyles['+${foldingInfoObj.styleIndex}+'].foldingWorking'">
+		<input type="hidden" name="step" value="draw"> 
+		<input type="hidden" id="drawstyleIndex" name="styleIndex"
+			th:value="${foldingInfoObj.styleIndex}">
+	</form>
+
+	<script th:inline="javascript">
+	
+		$(function(){
+			var foldingInfo = [[${foldingInfoObj}]]
+			var img = new Image();
+			if(foldingInfo.folderStyles != null && foldingInfo.folderStyles[foldingInfo.styleIndex].fimage != null){
+				$('#fimg').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].fimage);
+				$('#fimage').val(foldingInfo.folderStyles[foldingInfo.styleIndex].fimage)
+				$('#drawfimage').val(foldingInfo.folderStyles[foldingInfo.styleIndex].fimage)
+				$('#moveimg img').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].fimage);
+				styleNum = foldingInfo.folderStyles.length; 
+				currentStyle = foldingInfo.styleIndex + 1;
+				img.src = foldingInfo.folderStyles[foldingInfo.styleIndex].fimage;
+			}else{
+				img.src = "fold/test1_1f.jpg";
+			}
+			$('.headerpage').html(`共${styleNum}款 / 第${currentStyle}款`)
+			$('[data-toggle="popoverx"]').popover({
+        		html: true,
+        		trigger : 'focus',
+        		content: "<div class='tooltipnum'><input id='xlength' type='text'/>mm<button onclick=moveline('x') class='btn btn-default'>確認</button></div>",
+        		placement: "top"
+        	});
+			
+			$('[data-toggle="popoverx"]').on('shown.bs.popover', function () {
+				$('#xlength').val(naturalWidth/2)
+			})
+			
+			$('#reviewimgdiv a').click(function(){
+				$('#foldingWorking').val($(this).attr('name'));
+				$('#drawfimage').val(foldingInfo.folderStyles[currentStyle-1].fimage);
+				$('#drawbimage').val(foldingInfo.folderStyles[currentStyle-1].bimage);
+				$('#drawForm').submit();
+			})
+			
+			if(foldingInfo.folderStyles != null && foldingInfo.folderStyles[foldingInfo.styleIndex].bimage != null){
+				$('#bimg').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].bimage);
+				$('#bimage').val(foldingInfo.folderStyles[foldingInfo.styleIndex].bimage)
+				$('#drawbimage').val(foldingInfo.folderStyles[foldingInfo.styleIndex].bimage)
+			}
+			
+			$('.icon-mask-previous').parents('button').click(function(){
+				if(currentStyle <= 1){
+					$('#reviewForm').html($('#reviewForm').html().replace(new RegExp('folderStyles\\['+(currentStyle-1)+'\\]','g'),'folderStyles['+(styleNum-1)+']'))
+					currentStyle = styleNum;
+				}else{
+					$('#reviewForm').html($('#reviewForm').html().replace(new RegExp('folderStyles\\['+(currentStyle-1)+'\\]','g'),'folderStyles['+(currentStyle-2)+']'))
+					currentStyle --;
+				}
+				changeStyle();
+			})
+			
+			$('.icon-mask-next').parents('button').click(function(){
+				if(currentStyle < styleNum){
+					$('#reviewForm').html($('#reviewForm').html().replace(new RegExp('folderStyles\\['+(currentStyle-1)+'\\]','g'),'folderStyles['+currentStyle+']'))
+					currentStyle ++;
+				}else{
+					$('#reviewForm').html($('#reviewForm').html().replace(new RegExp('folderStyles\\['+(currentStyle-1)+'\\]','g'),'folderStyles[0]'))
+					currentStyle = 1;
+				}
+				changeStyle();
+			})
+			
+			var changeStyle=()=>{
+				$('input[name="styleIndex"]').val(currentStyle-1)
+				$('#fimg').attr('src',foldingInfo.folderStyles[currentStyle-1].fimage == null ? '' : foldingInfo.folderStyles[currentStyle-1].fimage)
+				$('#bimg').attr('src',foldingInfo.folderStyles[currentStyle-1].bimage == null ? '' : foldingInfo.folderStyles[currentStyle-1].bimage)
+				$('#img1').attr('src',foldingInfo.folderStyles[currentStyle-1].fimage == null ? '' : foldingInfo.folderStyles[currentStyle-1].fimage)
+				$('#fimage').val(foldingInfo.folderStyles[currentStyle-1].fimage)
+				$('#bimage').val(foldingInfo.folderStyles[currentStyle-1].bimage)
+				$('.headerpage').html('共'+styleNum+'款 / 第'+currentStyle+'款')
+			}
+			
+			img.onload = function(){
+		        var h = $(window).height();
+		        var w = $(window).width();
+		        var headerh = $('header.navbar').height();
+		        $("#container").css("height",h-headerh-14);
+		        var ch = $("#container").height();
+		        var cw = $("#content").width();
+		        var leftw = $(".leafbar").width();
+		        $(".leafbar").css("min-height",ch);
+		        $("#moveimg img").css("max-height",ch-300);
+
+		        //旋转
+		        spin_n = 0;
+		        imgwrapw = $(".maxbox").width();
+		        imgwraph = $(".maxbox").height();
+		        imgh = $("#moveimg img").height();
+		        imgw = $("#moveimg img").width();
+		        
+		        if (img.naturalWidth) { // 现代浏览器
+		        	naturalWidth = img.naturalWidth
+		        	naturalHeight = img.naturalHeight
+		        } else { // IE6/7/8
+		        	naturalWidth = img.width
+		            naturalHeight = img.height
+		        }
+		        
+		        maxh = $("#removediv").height();
+		        $(".lineH").css("height",imgwraph+140);
+		        $(".lineV").css("width",imgwrapw+140);
+
+		        if(w<1200){
+		            $(".lineV").css("width",imgwrapw+60);
+		        }
+		        
+		        $('.imgrangex-max').html(naturalWidth+"mm");
+		        $('.imgrangey-max').html(naturalHeight+"mm");
+
+				mdx = parseInt($('#moveimg img').offset().left)
+				mdy = parseInt($('#moveimg img').offset().top)
+				
+				$("#moveleftright").offset({left: mdx + imgw/2 - 5});
+		        
+				$('#imgw').val(naturalWidth);
+				$('#imgh').val(naturalHeight);
+				
+				$("[data-toggle='popoverx']").popover('show');
+			};
+			
+		})
+		var hammerRight = new Hammer(document.getElementById("moveleftright"));
+		var mdx,//moveimg的横、纵坐标
+		 	mdy,
+ 			imgw,//图片宽高
+			imgh,
+			naturalWidth,//实际宽高
+			naturalHeight,
+			styleNum=0,
+			currentStyle=1,
+			angle = 0;
+		var foldingInfoStr,foldingInfo;
+		
+		 var spin_n = 0;
+	     var imgwrapw;
+	     var imgwraph;
+	     var maxh;
+	     var imgx;
+	        
+        //水平
+        hammerRight.on("pan panmove", function (e) {       
+			
+			if(e.type == 'panmove'){  //拖动中
+				if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+					if(e.srcEvent.x > mdx+imgw/10 && e.srcEvent.x < mdx + 9*imgw/10){
+						
+						$('#moveleftright').offset({left:e.srcEvent.x})
+						$('#xlength').val(($('#moveleftright').offset().left - mdx + 5)/imgw * naturalWidth)
+						$('#xlength').parents('[role="tooltip"]').offset({left:e.srcEvent.x - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+				}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+					if(e.srcEvent.x > $('#moveimg img').offset().left + $('#moveimg img').height()/10 
+			 			&& e.srcEvent.x < $('#moveimg img').offset().left + 9*$('#moveimg img').height()/10 ){
+						$('#moveleftright').offset({left:e.srcEvent.x})
+						$('#xlength').val(($("#moveleftright").offset().left - $("#img1").offset().left +5) * (imgw/$("#img1").width()) / imgh * naturalHeight)
+						$('#xlength').parents('[role="tooltip"]').offset({left:e.srcEvent.x - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+			　　}							
+			}
+        });
+		
+		function reverse(){
+			if(foldingInfo.folderStyles != null){
+				if($('#moveimg img').attr('src') == foldingInfo.folderStyles[foldingInfo.styleIndex].fimage){
+					$('#moveimg img').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].bimage)
+					$('#line').val('blue');
+				}else{
+					$('#moveimg img').attr('src',foldingInfo.folderStyles[foldingInfo.styleIndex].fimage)
+					$('#line').val('red');
+				}
+			}
+		}
+		
+		function moveline(director){
+			if(director == 'x'){
+				if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+					if($('#xlength').val()*1 > naturalWidth/10 && $('#xlength').val()*1 < 9*naturalWidth/10){
+						$('#moveleftright').offset({left: $('#xlength').val()*imgw/naturalWidth + mdx - 5})
+						$('#xlength').parents('[role="tooltip"]').offset({left:$('#moveleftright').offset().left - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+				}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+					if($('#xlength').val()*1 > naturalHeight/10 && $('#xlength').val()*1 < 9*naturalHeight/10){
+						$('#moveleftright').offset({left: $('#xlength').val()*1/(imgw/$("#img1").width())/(naturalHeight/imgh) + $("#img1").offset().left - 5})
+						$('#xlength').parents('[role="tooltip"]').offset({left:$('#moveleftright').offset().left - $('#xlength').parents('[role="tooltip"]').width()/2})
+					}
+				}
+			}
+		}
+		
+		var saveFold = ()=>{
+			$('#xposition').val($('#xlength').val())
+			$('#angle').val(angle);
+			
+			var params = $('#reviewForm').serialize();
+			axios.post("reviewFold/saveFold",params)
+				.then(response => {
+					alert("保存成功")
+				})
+				.catch(error => {
+					alert("保存失敗")
+				});
+		}
+		
+		function review(){
+			$('#xposition').val($('#xlength').val())
+			$('#angle').val(angle);
+			$('#reviewForm').submit();
+		}
+		
+		function Rotate(r){
+			angle += r;
+			$('.btn-default-styles').attr('disabled','disabled')
+			$("#moveimg").rotate({
+				animateTo:angle,
+				duration:150,
+				callback: function(){
+					$('.btn-default-styles').removeAttr('disabled')
+					
+					$("#moveleftright").offset({left: mdx + imgw/2 - 5});
+					$('#xlength').parents('[role="tooltip"]').offset({left:$('#moveleftright').offset().left - $('#xlength').parents('[role="tooltip"]').width()/2})
+					$('#xlength').parents('[role="tooltip"]').offset({top:$("#moveleftright").offset().top - 40})
+					
+					if((angle/90) % 4 == 0 || (angle/90) % 4 == 2 || (angle/90) % 4 == -2){  //0度，180度
+						$('#xlength').val(naturalWidth/2)
+						$('#imgw').val(naturalWidth);
+						$('#imgh').val(naturalHeight);
+					}else if((angle/90) % 4 == 1 || (angle/90) % 4 == 3 || (angle/90) % 4 == -1 || (angle/90) % 4 == -3){ //90度，270度
+						$('#xlength').val(naturalHeight/2)
+						$('#imgw').val(naturalHeight);
+						$('#imgh').val(naturalWidth);
+					}
+				}
+			});
+			
+		}
+	</script>
+	<script type="text/javascript" src="js/dragjs.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.kimleysoft:SDK-source:2.8.53">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/kimleysoft/SDK-source/2.8.53/SDK-source-2.8.53.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/kimleysoft/SDK-source/2.8.53/SDK-source-2.8.53-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/kimleysoft/SDK-source/2.8.53/SDK-source-2.8.53-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
